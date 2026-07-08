@@ -1,7 +1,4 @@
-import { config } from 'dotenv';
 import { z } from 'zod';
-
-config({ path: '.env.local' });
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
