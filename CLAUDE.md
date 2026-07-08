@@ -167,6 +167,20 @@ Do not touch any other files.
 - Always keep CLAUDE.md updated before switching
 - Opening message for new chat includes the most recently changed file(s)
 
+### Git workflow (auto-commit)
+- Work happens directly on `main`. No feature branches, no PRs.
+- After completing a prompt/task and confirming `npx tsc --noEmit` is clean, **automatically commit and push without waiting to be asked**:
+  ```
+  git add .
+  git commit -m "<short, specific message describing what changed>"
+  git push origin main
+  ```
+- Commit messages should be lowercase, imperative, specific (e.g. `add codes/generate api route`, not `updates` or `wip`).
+- Never commit if `npx tsc --noEmit` fails or the task is half-finished. Fix first, then commit.
+- Never force-push. Never rewrite history. Never commit `.env` or `.env.local`.
+- If a `git push` fails (e.g. remote has newer commits), run `git pull --rebase origin main` first, resolve any conflicts, then push. Ask Shahnawaz before resolving any conflict that touches logic (not just formatting).
+- At the start of a session, run `git pull origin main` before making any changes (Shahnawaz works across two machines — Mac for `web/`, Windows for `booth/`).
+
 ---
 
 ## Hard Constraints (from spec, never violate)
