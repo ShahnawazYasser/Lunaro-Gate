@@ -10,8 +10,8 @@ export async function query<T>(text: string, params: unknown[] = []): Promise<T[
 
 export async function generateCode(
   printsPaidFor: number,
-  boothId: string,
-  expiryHours: number,
+  boothId: string = env.GATE_DEFAULT_BOOTH_ID,
+  expiryHours: number = env.GATE_CODE_EXPIRY_HOURS,
 ): Promise<string> {
   const rows = await query<{ generate_code: string }>(
     'select public.generate_code($1, $2, $3) as generate_code',
@@ -32,7 +32,10 @@ export interface ClaimedCode {
   expires_at: string;
 }
 
-export async function claimCode(code: string, boothId: string): Promise<ClaimedCode | null> {
+export async function claimCode(
+  code: string,
+  boothId: string = env.GATE_DEFAULT_BOOTH_ID,
+): Promise<ClaimedCode | null> {
   const rows = await query<ClaimedCode>('select * from public.claim_code($1, $2)', [code, boothId]);
 
   return rows[0] ?? null;
