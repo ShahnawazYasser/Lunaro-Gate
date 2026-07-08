@@ -1,0 +1,13 @@
+{
+  "name": "lunaro-gate",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "web",
+    "booth",
+    "shared"
+  ],
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
