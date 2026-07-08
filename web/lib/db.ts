@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { env } from './env';
 
-export const sql = neon(env.DATABASE_URL);
+export const sql = neon(env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 export async function query<T>(text: string, params: unknown[] = []): Promise<T[]> {
   const rows = await sql(text, params);

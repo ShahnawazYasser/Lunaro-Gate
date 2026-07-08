@@ -5,6 +5,7 @@ import { env } from '@/lib/env';
 import { query } from '@/lib/db';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 const querySchema = z.object({
   booth_id: z.string().min(1).optional(),

@@ -4,6 +4,7 @@ import type { CodeStatus, CodeStatusResponse } from '@lunaro-gate/shared';
 import { query } from '@/lib/db';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 const paramsSchema = z.object({
   code: z.string().regex(/^\d{4}$/, 'code must be 4 digits'),
