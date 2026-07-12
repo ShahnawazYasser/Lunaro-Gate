@@ -9,6 +9,7 @@ const envSchema = z.object({
   GATE_MAX_PRINTS_PER_CODE: z.coerce.number().int().positive(),
   GATE_CODE_EXPIRY_HOURS: z.coerce.number().int().positive(),
   GATE_RATE_LIMIT_PER_MIN: z.coerce.number().int().positive(),
+  CRON_SECRET: z.string().min(16, 'CRON_SECRET is required and must be at least 16 characters'),
 });
 
 function loadEnv(): z.infer<typeof envSchema> {
