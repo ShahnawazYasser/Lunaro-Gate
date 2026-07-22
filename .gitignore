@@ -11,3 +11,6 @@ release/
 .DS_Store
 .vscode/
 .idea/
+next-env.d.ts
+*.tsbuildinfo
+package-lock\ 2.json
