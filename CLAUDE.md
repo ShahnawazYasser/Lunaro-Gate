@@ -17,25 +17,21 @@ Backed by **Neon Postgres**. Booth polls Vercel API routes every 2s during activ
 
 ## Current Build Status
 
-### Not yet started
-Project is in the spec-locked phase. No code written.
+### Built and working (`web/`)
+- Neon Postgres schema + env validation + DB client
+- Code lifecycle API routes: `generate`, `claim`, `[code]/status`, `in-flight`, `recent`, `expire-old`
+- DSLRBooth webhook receiver
+- Pricing config API route (no hardcoded prices in UI)
+- Cashier UI: prints selector, code modal, recent codes table
+- Code expiry moved from Vercel Cron to an hourly GitHub Actions workflow (`.github/workflows/expire-codes.yml`) — Vercel Hobby plan only allows daily cron
+- Typecheck/lint scripts, ESLint config, CI workflow, standalone output for Vercel deploy
+
+### Not started
+- **Booth Electron app** (`booth/` workspace doesn't exist yet)
 
 **Next steps (in order):**
-1. Manual setup — instructions in `docs/SETUP_GUIDE.md`
-2. Run through prompts — `docs/CLAUDE_CODE_PROMPTS.md`
-
-### File structure (planned)
-```
-lunaro-gate/
-├── web/             ← Next.js (cashier + webhooks + API routes)
-├── booth/           ← Electron app (booth laptop)
-├── shared/          ← Cross-package TypeScript types
-├── db/              ← schema.sql
-├── docs/            ← Setup + prompts
-├── CLAUDE.md        ← (this file)
-├── LUNARO_GATE_SPEC.md
-└── README.md
-```
+1. Scaffold the `booth/` Electron app per `LUNARO_GATE_SPEC.md`
+2. Wire booth polling + DSLRBooth `/api/start`, `/api/print`, lockscreen calls (see `dslrbooth-api` skill)
 
 ---
 
@@ -55,26 +51,9 @@ lunaro-gate/
 
 ---
 
-## DSLRBooth API Cheat Sheet
+## DSLRBooth API
 
-All endpoints are `GET`. Always append `&password=$DSLRBOOTH_API_PASSWORD`.
-
-| Endpoint | Purpose |
-|---|---|
-| `/api/start?mode=print` | Start a Print session. Requires DSLRBooth on its start screen. |
-| `/api/print?count=N` | Reprint last session's image N times. |
-| `/api/lockscreen/show` | Show DSLRBooth lock screen (requires PIN set in DSLRBooth). |
-| `/api/lockscreen/exit` | Dismiss the lock screen. |
-
-### DSLRBooth webhook events (fired to our `/api/webhook`)
-
-| event_type | Params | Action in our system |
-|---|---|---|
-| `session_start` | `param1 = mode` | Transition claimed code → `in_session` |
-| `printing` | `param1 = file`, `param2 = num_copies`, `param3 = printer` | Increment `prints_completed` by `param2` |
-| `session_end` | — | Transition in_session code → `used` |
-
-Always respond `200 OK { ok: true }`. Never make DSLRBooth retry.
+Full endpoint and webhook-event reference: see the `dslrbooth-api` skill (`.claude/skills/dslrbooth-api/SKILL.md`).
 
 ---
 
@@ -203,16 +182,7 @@ Do not touch any other files.
 ## Environment Variables
 
 ### Vercel (`web/`)
-```
-DATABASE_URL=postgres://...pooler.neon.tech/...
-DATABASE_URL_UNPOOLED=postgres://...neon.tech/...
-GATE_DEFAULT_BOOTH_ID=default
-GATE_BASE_PRICE_PKR=500
-GATE_ADDITIONAL_COPY_PRICE_PKR=250
-GATE_MAX_PRINTS_PER_CODE=5
-GATE_CODE_EXPIRY_HOURS=2
-GATE_RATE_LIMIT_PER_MIN=30
-```
+See `web/.env.local.example` for the current list and required values.
 
 ### Electron app (`booth/`)
 ```
@@ -226,22 +196,9 @@ SESSION_TIMEOUT_MS=300000
 
 ---
 
-## Design Tokens (Tailwind config)
+## Design Tokens
 
-```js
-colors: {
-  bg:        '#0B1929',  // midnight navy
-  surface:   '#16293D',
-  border:    'rgba(200,212,224,0.12)',
-  gold:      '#C9A84C',
-  textPri:   '#E8EFF5',
-  textSec:   '#8A9BAD',
-  success:   '#4AC47A',
-  danger:    '#C45A4A',
-}
-```
-
-Layout: 1920×1080 landscape for booth. Touch targets min 64×64px. Currency always `PKR`.
+Palette lives in `web/tailwind.config.ts`. Layout: 1920×1080 landscape for booth. Touch targets min 64×64px. Currency always `PKR`.
 
 ---
 
